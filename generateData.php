@@ -12,5 +12,5 @@ while (true) {
     $sensor1['value'] = rand(0, 10);
     $data[] = $sensor1;
     echo json_encode(['action' => 'serialRead', 'data' => $data]).PHP_EOL;
-    usleep(2000000);
+    usleep(1000000);
 }

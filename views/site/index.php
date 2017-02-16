@@ -9,8 +9,24 @@ $this->title = 'My Yii Application';
         <h1>Gráfico</h1>
     </div>
     <div class="body-content">
+        <form>
+            <div class="form-group">
+                <label for="exampleInputEmail1">Email address</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+                <label for="exampleSelect1">Example select</label>
+                <select class="form-control" id="exampleSelect1">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary">Conectar</button>
+        </form>
         <div id="container" style="height: 400px; min-width: 310px"></div>
-        <div id="serialAvailables"></div>
     </div>
 </div>
 <script>
@@ -21,12 +37,8 @@ $this->title = 'My Yii Application';
             var data = [],
                 time = (new Date()).getTime(),
                 i;
-
             for (i = -999; i <= 0; i += 1) {
-                data.push([
-                    time + i * 1000,
-                    Math.round(Math.random() * 10)
-                ]);
+                data.push([time + i * 1000,0]);
             }
             return data;
         }())
@@ -91,7 +103,7 @@ $this->title = 'My Yii Application';
                 addPointIntoSerie(data.data[0].timestamp, data.data[0].value);
                 break;
             case 'serialAvailable':
-                alert(data.data);
+//                alert(data.data);
                 break;
         }
     };

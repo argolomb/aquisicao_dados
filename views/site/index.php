@@ -10,38 +10,46 @@ $this->title = 'My Yii Application';
     </div>
     <div class="body-content">
         <div id="container" style="height: 400px; min-width: 310px"></div>
+        <div id="serialAvailables"></div>
     </div>
 </div>
 <script>
-    var ws = new WebSocket('ws://localhost:8080/');
-    ws.onopen = function() {
-        document.body.style.backgroundColor = '#cfc';
-    };
-    ws.onclose = function() {
-        document.body.style.backgroundColor = null;
-    };
-    ws.onmessage = function(event) {
-        var data = event.data;
+    var series = {
+        name: 'Random data',
+            data: (function () {
+            // generate an array of random data
+            var data = [],
+                time = (new Date()).getTime(),
+                i;
+
+            for (i = -999; i <= 0; i += 1) {
+                data.push([
+                    time + i * 1000,
+                    Math.round(Math.random() * 10)
+                ]);
+            }
+            return data;
+        }())
     };
     Highcharts.setOptions({
         global: {
             useUTC: false
         }
     });
-    Highcharts.stockChart('container', {
-        chart: {
+    var hc = Highcharts.stockChart('container', {
+        /*chart: {
             events: {
-                load: function () {
+                load: function (x, y) {
                     // set up the updating of the chart each second
-                    var series = this.series[0];
-                    setInterval(function () {
+                    //this.series[0].addPoint([x, y], true, true);
+                    /*setInterval(function () {
                         var x = (new Date()).getTime(), // current time
                             y = Math.round(Math.random() * 10);
                         series.addPoint([x, y], true, true);
-                    }, 1000);
+                    }, 1000);*-/
                 }
             }
-        },
+        },*/
         rangeSelector: {
             buttons: [{
                 count: 1,
@@ -62,24 +70,29 @@ $this->title = 'My Yii Application';
             text: 'Live random data'
         },
         exporting: {
-            enabled: false
+            enabled: true
         },
-        series: [{
-            name: 'Random data',
-            data: (function () {
-                // generate an array of random data
-                var data = [],
-                    time = (new Date()).getTime(),
-                    i;
-
-                for (i = -999; i <= 0; i += 1) {
-                    data.push([
-                        time + i * 1000,
-                        Math.round(Math.random() * 10)
-                    ]);
-                }
-                return data;
-            }())
-        }]
+        series: [series]
     });
+    var addPointIntoSerie = function(x, y) {
+        hc.series[0].addPoint([x, y], true, true);
+    };
+    var ws = new WebSocket('ws://localhost:8080/');
+    ws.onopen = function() {
+        document.body.style.backgroundColor = '#cfc';
+    };
+    ws.onclose = function() {
+        document.body.style.backgroundColor = '#ff8982';
+    };
+    ws.onmessage = function(event) {
+        var data = JSON.parse(event.data);
+        switch (data.action) {
+            case 'serialRead':
+                addPointIntoSerie(data.data[0].timestamp, data.data[0].value);
+                break;
+            case 'serialAvailable':
+                alert(data.data);
+                break;
+        }
+    };
 </script>
